@@ -1,6 +1,14 @@
 import axios, { AxiosError } from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL;
+let calculatedBaseUrl = '/api/v1';
+
+if (rawBaseUrl && typeof rawBaseUrl === 'string' && rawBaseUrl.trim() !== '') {
+  const trimmed = rawBaseUrl.trim().replace(/\/+$/, '');
+  calculatedBaseUrl = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+}
+
+export const BASE_URL = calculatedBaseUrl;
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,

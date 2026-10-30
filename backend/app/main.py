@@ -71,12 +71,14 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS configuration: strict whitelisting in production, flexible in development
-allowed_origins = (
-    list(set(settings.BACKEND_CORS_ORIGINS + [settings.FRONTEND_ORIGIN]))
-    if is_production
-    else ["*"]
-)
+# CORS configuration: accept ONLY the deployed frontend origin in production, flexible in development
+if is_production:
+    raw_origins = [o.strip().rstrip("/") for o in settings.FRONTEND_ORIGIN.split(",") if o.strip()]
+    allowed_origins = [o for o in raw_origins if o]
+    if not allowed_origins:
+        allowed_origins = [settings.FRONTEND_ORIGIN.strip().rstrip("/")]
+else:
+    allowed_origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -114,3 +116,10 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    port = int(os.getenv("PORT", "8000"))
+    host = os.getenv("HOST", "0.0.0.0")
+    uvicorn.run("app.main:app", host=host, port=port, reload=False)

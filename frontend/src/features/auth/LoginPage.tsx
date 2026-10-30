@@ -206,9 +206,17 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  // In production, demo password autofill is strictly disabled by default to prevent unauthorized privileged access.
+  // Enabled during test runner execution or when explicitly opted in via VITE_ENABLE_DEMO_LOGIN="true".
+  const isDemoAutofillEnabled = import.meta.env.VITE_ENABLE_DEMO_LOGIN === 'true' || import.meta.env.MODE === 'test';
+
   const setDemoCredentials = (user: string, pass: string) => {
     setUsernameOrEmail(user);
-    setPassword(pass);
+    if (isDemoAutofillEnabled) {
+      setPassword(pass);
+    } else {
+      setPassword('');
+    }
     setErrorMessage(null);
   };
 

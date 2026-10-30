@@ -787,6 +787,6 @@ def seed_database(db: Session, reset: bool = False):
 if __name__ == "__main__":
     db = SessionLocal()
     try:
-        seed_database(db, reset=True)
+        seed_database(db, reset=False)
     finally:
         db.close()

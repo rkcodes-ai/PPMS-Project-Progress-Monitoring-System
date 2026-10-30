@@ -1,0 +1,51 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Backend Web Service (FastAPI)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: ppms-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    region: oregon
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: DATABASE_URL
+        sync: false # Set to your Neon PostgreSQL connection string
+      - key: SECRET_KEY
+        generateValue: true # Render automatically generates a 256-bit cryptographically secure string
+      - key: FRONTEND_ORIGIN
+        sync: false # Set to your deployed Render Static Site URL (e.g. https://ppms-frontend.onrender.com)
+      - key: SEED_HOD_PASSWORD
+        sync: false # Set initial password for HOD admin account
+      - key: SEED_ADVISOR_PASSWORD
+        sync: false # Set initial password for Section Advisor accounts
+      - key: SEED_MENTOR_PASSWORD
+        sync: false # Set initial password for Faculty Mentor accounts
+      - key: SEED_STUDENT_PASSWORD
+        sync: false # Set initial password for Student accounts
+
+  # ---------------------------------------------------------------------------
+  # Frontend Static Site (React + Vite)
+  # ---------------------------------------------------------------------------
+  - type: static
+    name: ppms-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false # Set to backend URL with /api/v1 (e.g. https://ppms-backend.onrender.com/api/v1)
+      - key: VITE_ENABLE_DEMO_LOGIN
+        value: "false" # Keep false in production to prevent privileged credential auto-fill
+
