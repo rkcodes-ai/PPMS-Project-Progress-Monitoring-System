@@ -1,0 +1,24 @@
+# Backend .gitignore
+.env
+.env.*
+!.env.example
+
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+*.sha256
+backups/
+
+uploads/documents/*
+!uploads/documents/.gitkeep
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
