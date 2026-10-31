@@ -33,12 +33,12 @@ services:
   # ---------------------------------------------------------------------------
   # Frontend Static Site (React + Vite)
   # ---------------------------------------------------------------------------
-  - type: static
+  - type: web
     name: ppms-frontend
+    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
-    publishDir: dist
-    plan: free
+    staticPublishPath: ./dist
     routes:
       - type: rewrite
         source: /*
@@ -48,4 +48,3 @@ services:
         sync: false # Set to backend URL with /api/v1 (e.g. https://ppms-backend.onrender.com/api/v1)
       - key: VITE_ENABLE_DEMO_LOGIN
         value: "false" # Keep false in production to prevent privileged credential auto-fill
-
